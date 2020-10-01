@@ -1,6 +1,6 @@
 # @export
 normalize_kernal <- function(k){
-  if(typeof(k) == "list"){
+  if(is.list(k)){
     lapply(k, normalize_kernal)
   }else{
     if(s <- sum(k)){
