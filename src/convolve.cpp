@@ -15,46 +15,46 @@ void _convolve(
     const NumericMatrix& kernel, 
     const NumericMatrix& data, 
     NumericMatrix& output,
-    const int_least32_t width,
-    const int_least32_t height,
-    const int_least32_t k_width,
-    const int_least32_t k_height){
+    const size_t width,
+    const size_t height,
+    const size_t k_width,
+    const size_t k_height,
+    const vector<pair<size_t, size_t>>& k_points){
   
-  const auto x_indexes = std::ranges::iota_view(0, width);
-  const auto y_indexes = std::ranges::iota_view(0, height);
+  const auto x_indexes = std::ranges::iota_view<size_t, size_t>(0, width);
+  const auto y_indexes = std::ranges::iota_view<size_t, size_t>(0, height);
   
-  const auto x_k_indexes = std::ranges::iota_view(0, k_width);
-  const auto y_k_indexes = std::ranges::iota_view(0, k_height);
-  
-  const auto policy = std::execution::par_unseq;
-  
+  /*
+   * Parallel stratagy
+   * 
+   * Use threads per column, in any order
+   * 
+   * within each column, do each data point sequentially and in any order
+   * 
+   * within each data point, perform the multiply and add in any order and 
+   *  if possible all at the same time using wide vector instructions
+   * 
+   */
   for_each(
-    policy,
+    std::execution::par,
     begin(x_indexes), 
     end(x_indexes), 
     [&] (auto x){
       for_each(
-        policy,
+        std::execution::seq,
         begin(y_indexes), 
         end(y_indexes),
         [&] (auto y){
           output[y+x*height] = transform_reduce(
-            policy,
-            begin(y_k_indexes), 
-            end(y_k_indexes),
+            std::execution::unseq,
+            begin(k_points), 
+            end(k_points),
             0.0,
             std::plus<>{},
-            [&](auto ky){
-              return transform_reduce(
-                policy,
-                begin(x_k_indexes), 
-                end(x_k_indexes),
-                0.0,
-                std::plus<>{},
-                [&](auto kx){
-                  return kernel[(k_width*k_height-1)-(ky+kx*k_height)]*data[clamp(y+ky-k_height/2, 0, height-1)+height*clamp(x+kx-k_width/2, 0, width-1)];
-                });
-            });
+            [&](auto point){
+                auto[k_x, k_y]= point;
+                return kernel.end()[-1-(k_y+k_x*k_height)]*data[clamp(y+k_y-k_height/2, (size_t)0, height-1)+height*clamp(x+k_x-k_width/2, (size_t)0, width-1)];
+              });
         });
     });
 }
@@ -70,18 +70,34 @@ NumericMatrix convolve_cpp(NumericMatrix data, vector<NumericMatrix> kernel, uns
   NumericMatrix* output_1 = &_output_1;
   NumericMatrix* output_2 = &_output_2;
   
+  vector<vector<pair<size_t, size_t>>> k_points;
+  k_points.reserve(kernel.size());
+  
+  const auto k_indexes = std::ranges::iota_view<size_t, size_t>(0, kernel.size());
+  
   bool first_rep = true;
   
   for(unsigned long c = 0; c<count; c++){
-    for(auto k : kernel){  
-      auto k_width = k.ncol();
-      auto k_height = k.nrow();
+    for(auto k_index : k_indexes){  
+      auto k_width = kernel[k_index].ncol();
+      auto k_height = kernel[k_index].nrow();
+      
+      if(k_index >= k_points.size()){
+        k_points.emplace_back();
+        k_points.back().reserve(k_width*k_height);
+        
+        for(size_t x = 0; x<k_width; x++){
+          for(size_t y = 0; y<k_height; y++){
+            k_points.back().emplace_back(x,y);
+          }
+        }
+      }
       
       if(first_rep){
         first_rep = false;
-        _convolve(k, data, *output_2, d_width, d_height, k_width, k_height);
+        _convolve(kernel[k_index],  data,     *output_2, d_width, d_height, k_width, k_height, k_points[k_index]);
       }else{
-        _convolve(k, *output_1, *output_2, d_width, d_height, k_width, k_height);
+        _convolve(kernel[k_index], *output_1, *output_2, d_width, d_height, k_width, k_height, k_points[k_index]);
       }
       auto t = output_2;
       output_2 = output_1;
