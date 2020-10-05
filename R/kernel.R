@@ -1,7 +1,7 @@
 # @export
-normalize_kernal <- function(k){
+normalize_kernel <- function(k){
   if(is.list(k)){
-    lapply(k, normalize_kernal)
+    lapply(k, normalize_kernel)
   }else{
     if(s <- sum(k)){
       k/s
@@ -11,9 +11,9 @@ normalize_kernal <- function(k){
   }
 }
 
-qkernal_to_kernal <- function(q){
+qkernel_to_kernel <- function(q){
   if(typeof(q) == "list"){
-    lapply(q, qkernal_to_kernal)
+    lapply(q, qkernel_to_kernel)
   }else{
     rows <- nrow(q)
     cols <- ncol(q)
@@ -56,14 +56,14 @@ qkernal_to_kernal <- function(q){
   }
 }
 
-hard_uniform_circle_qkernal <- function(radius) {
+hard_uniform_circle_qkernel <- function(radius) {
   qm <- matrix(0:radius, radius+1, radius+1)
   +(qm^2 + t(qm)^2 <= radius^2)
 }
 
 # @export
-hard_uniform_circle_kernal <- function(radius) {
-  qkernal_to_kernal(hard_uniform_circle_qkernal(radius))
+hard_uniform_circle_kernel <- function(radius) {
+  qkernel_to_kernel(hard_uniform_circle_qkernel(radius))
 }
 
 half_circle_integral <- function(r, a, b) {
@@ -223,18 +223,18 @@ square_covered_portion <- function(r, x, y){
   }
 }
 
-smooth_uniform_circle_qkernal <- function(r) {
+smooth_uniform_circle_qkernel <- function(r) {
   qmx = matrix(1:(r+1.5), r+1.5, r+1.5)
   qmy = matrix(1:(r+1.5), r+1.5, r+1.5, byrow=TRUE)
   matrix(mapply(square_covered_portion, r, qmx, qmy), r+1.5, r+1.5)
 }
 
 # @export
-smooth_uniform_circle_kernal <- function(r){
-  qkernal_to_kernal(smooth_uniform_circle_qkernal(r))
+smooth_uniform_circle_kernel <- function(r){
+  qkernel_to_kernel(smooth_uniform_circle_qkernel(r))
 }
 
-distance_qkernal <- function(r){
+distance_qkernel <- function(r){
   #r <- ceiling(r)
   x <- matrix(0:r, r+1, r+1)
   y <- matrix(0:r, r+1, r+1, byrow=TRUE)
@@ -242,8 +242,8 @@ distance_qkernal <- function(r){
 }
 
 # @export
-distance_kernal <- function(r){
-  qkernal_to_kernal(distance_qkernal(r))
+distance_kernel <- function(r){
+  qkernel_to_kernel(distance_qkernel(r))
 }
 
 exponential_qkernel<-function(dbar,cellDim=1,negligible=10^-10,returnScale=F,dmax=NULL){
@@ -255,7 +255,7 @@ exponential_qkernel<-function(dbar,cellDim=1,negligible=10^-10,returnScale=F,dma
       stop("Set negligible so that pi*dbar^2*negligible/2 <=1")
     }
   }
-  m <- (2/(pi*dbarCell^2))*exp(-2*distance_qkernal(dmax)/dbarCell)
+  m <- (2/(pi*dbarCell^2))*exp(-2*distance_qkernel(dmax)/dbarCell)
   m[m<negligible] <- 0
   if(returnScale){
     return((sum(m[-1,])*4)+m[1,1])#this would be sum(m) if we had the entire matrix, but we do not
@@ -266,17 +266,17 @@ exponential_qkernel<-function(dbar,cellDim=1,negligible=10^-10,returnScale=F,dma
 
 # @export
 exponential_kernel <- function(dbar,cellDim=1,negligible=10^-10,returnScale=F,dmax=NULL){
-  qkernal_to_kernal(exponential_qkernel(dbar, cellDim, negligible, returnScale, dmax))
+  qkernel_to_kernel(exponential_qkernel(dbar, cellDim, negligible, returnScale, dmax))
 }
 
-gaussian_qkernal <- function(sd, r0=0.05){
+gaussian_qkernel <- function(sd, r0=0.05){
   k <- matrix(exp(-(0:sqrt(-2*sd*sd*log(r0)))/(2*sd*sd)))
   list(k, t(k))
 }
 
 # @export
-gaussian_kernal <- function(sd, r0=0.05){
-  qkernal_to_kernal(gaussian_qkernal(sd, r0))
+gaussian_kernel <- function(sd, r0=0.05){
+  qkernel_to_kernel(gaussian_qkernel(sd, r0))
 }
 
 
