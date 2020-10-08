@@ -3,7 +3,7 @@
 #include <ranges>
 #include <iostream>
 
-#include "matrix_edge_cases.hpp"
+#include "matrix_edge_cases.h"
 
 using namespace Rcpp; 
 using namespace std;

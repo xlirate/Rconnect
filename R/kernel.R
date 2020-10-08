@@ -1,4 +1,4 @@
-# @export
+#' @export
 normalize_kernel <- function(k){
   if(is.list(k)){
     lapply(k, normalize_kernel)
@@ -61,7 +61,7 @@ hard_uniform_circle_qkernel <- function(radius) {
   +(qm^2 + t(qm)^2 <= radius^2)
 }
 
-# @export
+#' @export
 hard_uniform_circle_kernel <- function(radius) {
   qkernel_to_kernel(hard_uniform_circle_qkernel(radius))
 }
@@ -229,7 +229,7 @@ smooth_uniform_circle_qkernel <- function(r) {
   matrix(mapply(square_covered_portion, r, qmx, qmy), r+1.5, r+1.5)
 }
 
-# @export
+#' @export
 smooth_uniform_circle_kernel <- function(r){
   qkernel_to_kernel(smooth_uniform_circle_qkernel(r))
 }
@@ -241,7 +241,7 @@ distance_qkernel <- function(r){
   matrix(mapply(function(x,y){sqrt(x*x+y*y)}, x, y),r+1, r+1)
 }
 
-# @export
+#' @export
 distance_kernel <- function(r){
   qkernel_to_kernel(distance_qkernel(r))
 }
@@ -264,7 +264,7 @@ exponential_qkernel<-function(dbar,cellDim=1,negligible=10^-10,returnScale=F,dma
   }
 }
 
-# @export
+#' @export
 exponential_kernel <- function(dbar,cellDim=1,negligible=10^-10,returnScale=F,dmax=NULL){
   qkernel_to_kernel(exponential_qkernel(dbar, cellDim, negligible, returnScale, dmax))
 }
@@ -274,7 +274,7 @@ gaussian_qkernel <- function(sd, r0=0.05){
   list(k, t(k))
 }
 
-# @export
+#' @export
 gaussian_kernel <- function(sd, r0=0.05){
   qkernel_to_kernel(gaussian_qkernel(sd, r0))
 }

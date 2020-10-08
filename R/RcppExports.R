@@ -2,42 +2,46 @@
 # Generator token: 10BE3573-1514-4C36-9D1C-5A225CD40393
 
 .beyer_stretch <- function(data, mask, beta = 0.2, z = 0.5) {
-    .Call(`_Rconnect_beyer_stretch`, data, mask, beta, z)
+    .Call('_Rconnect_beyer_stretch', PACKAGE = 'Rconnect', data, mask, beta, z)
 }
 
 .beyer_wrap <- function(data, mask, beta = 0.2, z = 0.5) {
-    .Call(`_Rconnect_beyer_wrap`, data, mask, beta, z)
+    .Call('_Rconnect_beyer_wrap', PACKAGE = 'Rconnect', data, mask, beta, z)
 }
 
 .beyer_refect <- function(data, mask, beta = 0.2, z = 0.5) {
-    .Call(`_Rconnect_beyer_refect`, data, mask, beta, z)
+    .Call('_Rconnect_beyer_refect', PACKAGE = 'Rconnect', data, mask, beta, z)
 }
 
 .beyer_zero <- function(data, mask, beta = 0.2, z = 0.5) {
-    .Call(`_Rconnect_beyer_zero`, data, mask, beta, z)
+    .Call('_Rconnect_beyer_zero', PACKAGE = 'Rconnect', data, mask, beta, z)
 }
 
 .beyer_shrink <- function(data, mask, beta = 0.2, z = 0.5) {
-    .Call(`_Rconnect_beyer_shrink`, data, mask, beta, z)
+    .Call('_Rconnect_beyer_shrink', PACKAGE = 'Rconnect', data, mask, beta, z)
 }
 
 .convolve_stretch <- function(data, kernel) {
-    .Call(`_Rconnect_convolve_stretch`, data, kernel)
+    .Call('_Rconnect_convolve_stretch', PACKAGE = 'Rconnect', data, kernel)
 }
 
 .convolve_wrap <- function(data, kernel) {
-    .Call(`_Rconnect_convolve_wrap`, data, kernel)
+    .Call('_Rconnect_convolve_wrap', PACKAGE = 'Rconnect', data, kernel)
 }
 
 .convolve_refect <- function(data, kernel) {
-    .Call(`_Rconnect_convolve_refect`, data, kernel)
+    .Call('_Rconnect_convolve_refect', PACKAGE = 'Rconnect', data, kernel)
 }
 
 .convolve_zero <- function(data, kernel) {
-    .Call(`_Rconnect_convolve_zero`, data, kernel)
+    .Call('_Rconnect_convolve_zero', PACKAGE = 'Rconnect', data, kernel)
 }
 
 .convolve_shrink <- function(data, kernel) {
-    .Call(`_Rconnect_convolve_shrink`, data, kernel)
+    .Call('_Rconnect_convolve_shrink', PACKAGE = 'Rconnect', data, kernel)
+}
+
+rcpp_hello_world <- function() {
+    .Call('_Rconnect_rcpp_hello_world', PACKAGE = 'Rconnect')
 }
 
