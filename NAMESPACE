@@ -1,3 +1,3 @@
-exportPattern("^[[:alpha:]]+")
+useDynLib(Rconnect, .registration=TRUE)
 importFrom(Rcpp, evalCpp)
-useDynLib(Rconnect, .registration = TRUE)
+exportPattern("^[[:alpha:]]+")

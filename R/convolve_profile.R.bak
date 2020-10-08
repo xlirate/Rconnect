@@ -1,0 +1,47 @@
+small_k <- smooth_uniform_circle_kernel(5)  #    10 x 10 kernel
+large_k <- exponential_kernel(1.5)          #    33 x 33 kernel
+sep_k <- gaussian_kernel(20)                #    97 x 97 separated kernel
+
+small_d <- matrix(rexp(100), 10)            #    10 x    10 -> 100 pixels
+med_d   <- matrix(rexp(1000), 50, 50)       #    50 x    50 -> 2,500 pixels
+large_d <- matrix(rexp(1000), 10000, 10000) # 10000 x 10000 -> 100,000,000 pixels, 800MB of data
+
+#does not reach outside the matrix, shrinks the output instead
+system.time(r <- convolve_shrink(small_d,small_k))
+system.time(r <- convolve_shrink(small_d,large_k))
+system.time(r <- convolve_shrink(small_d,sep_k))
+system.time(r <- convolve_shrink(large_d,small_k))
+system.time(r <- convolve_shrink(large_d,sep_k))
+system.time(r <- convolve_shrink(med_d,large_k))
+
+#outside the matrix is all zeros
+system.time(r <- convolve_zero(small_d,small_k))
+system.time(r <- convolve_zero(small_d,large_k))
+system.time(r <- convolve_zero(small_d,sep_k))
+system.time(r <- convolve_zero(large_d,small_k))
+system.time(r <- convolve_zero(large_d,sep_k))
+system.time(r <- convolve_zero(med_d,large_k))
+
+#outside the matrix, there are reflected copies of the matrix
+system.time(r <- convolve_reflect(small_d,small_k))
+system.time(r <- convolve_reflect(small_d,large_k))
+system.time(r <- convolve_reflect(small_d,sep_k))
+system.time(r <- convolve_reflect(large_d,small_k))
+system.time(r <- convolve_reflect(large_d,sep_k))
+system.time(r <- convolve_reflect(med_d,large_k))
+
+#outside the matrix, the value is the value of the closest part of the matrix
+system.time(r <- convolve_stretch(small_d,small_k))
+system.time(r <- convolve_stretch(small_d,large_k))
+system.time(r <- convolve_stretch(small_d,sep_k))
+system.time(r <- convolve_stretch(large_d,small_k))
+system.time(r <- convolve_stretch(large_d,sep_k))
+system.time(r <- convolve_stretch(med_d,large_k))
+
+#outside the matrix, the values repeat like in pacman
+system.time(r <- convolve_wrap(small_d,small_k))
+system.time(r <- convolve_wrap(small_d,large_k))
+system.time(r <- convolve_wrap(small_d,sep_k))
+system.time(r <- convolve_wrap(large_d,small_k))
+system.time(r <- convolve_wrap(large_d,sep_k))
+system.time(r <- convolve_wrap(med_d,large_k))
