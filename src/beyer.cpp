@@ -17,14 +17,13 @@ NumericMatrix _beyer(
     const double beta = 0.2,
     const double z = 0.5){
   
-  const auto full_data_indexes = ranges::iota_view<int, int>(0, data.size());
-  
-  for_each(
+  transform(
     execution::par_unseq,
-    begin(full_data_indexes),
-    end(full_data_indexes),
-    [&data, z](auto i){
-      data[i] = std::pow(data[i], z);
+    begin(data),
+    end(data),
+    begin(data),
+    [z](auto d){
+      return std::pow(d, z);
     });
   
   auto m_width  = mask.ncol();

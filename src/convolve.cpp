@@ -39,13 +39,12 @@ NumericMatrix _convolve(
   const auto x_indexes = ranges::iota_view<int, int>(0, o_width);
   const auto y_indexes = ranges::iota_view<int, int>(0, o_height);
   
-  vector<pair<int, int>> k_points;
-  //k_points.reserve(k_width*k_height);
+  vector<tuple<int, int, double>> k_points;
   
   for(int x = 0; x<k_width; x++){
     for(int y = 0; y<k_height; y++){
       if(kernel[y+x*k_height]){
-        k_points.emplace_back(x,y);
+        k_points.emplace_back(x,y, kernel[y+x*k_height]);
       }
     }
   }
@@ -81,7 +80,7 @@ NumericMatrix _convolve(
             0.0,
             plus<>{},
             [&](auto point){
-              auto[k_x, k_y]= point;
+              auto[k_x, k_y, k_v]= point;
               auto d_x = CLAMP(o_x, k_x, d_width,  k_width);
               auto d_y = CLAMP(o_y, k_y, d_height, k_height);
               if constexpr(ZERO_OUT_OF_BOUNDS){
@@ -89,7 +88,7 @@ NumericMatrix _convolve(
                   return 0.0;
                 }
               }
-              return data[d_y+d_height*d_x]*kernel[k_y+k_height*k_x];
+              return data[d_y+d_height*d_x]*k_v;
             });
         });
     });

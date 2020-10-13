@@ -11,9 +11,9 @@ normalize_kernel <- function(k){
   }
 }
 
-qkernel_to_kernel <- function(q){
+.qkernel_to_kernel <- function(q){
   if(typeof(q) == "list"){
-    lapply(q, qkernel_to_kernel)
+    lapply(q, .qkernel_to_kernel)
   }else{
     rows <- nrow(q)
     cols <- ncol(q)
@@ -56,23 +56,23 @@ qkernel_to_kernel <- function(q){
   }
 }
 
-hard_uniform_circle_qkernel <- function(radius) {
+.hard_uniform_circle_qkernel <- function(radius) {
   qm <- matrix(0:radius, radius+1, radius+1)
   +(qm^2 + t(qm)^2 <= radius^2)
 }
 
 #' @export
 hard_uniform_circle_kernel <- function(radius) {
-  qkernel_to_kernel(hard_uniform_circle_qkernel(radius))
+  .qkernel_to_kernel(.hard_uniform_circle_qkernel(radius))
 }
 
-half_circle_integral <- function(r, a, b) {
+.half_circle_integral <- function(r, a, b) {
   # This is $$\int_{a}^b \sqrt{r^2 - x^2} dx$$ simplified slightly
   # integrate from a to b for sqrt(r^2 - x^2) dx
   (b*sqrt(r^2-b^2)-a*sqrt(r^2-a^2)+r^2*(atan2(b, sqrt(r^2-b^2))-atan2(a, sqrt(r^2-a^2))))/2
 }
 
-square_covered_portion <- function(r, x, y){
+.square_covered_portion <- function(r, x, y){
   x <- abs(x)-1
   y <- abs(y)-1
   if (x < y){
@@ -138,7 +138,7 @@ square_covered_portion <- function(r, x, y){
       #  /O-----O
       #
       crossover <- sqrt(r^2-(x-0.5)^2)
-      2*(half_circle_integral(r, 0, crossover)-crossover*(x-0.5))
+      2*(.half_circle_integral(r, 0, crossover)-crossover*(x-0.5))
     }else if(r <= (x+0.5)){
       # Covering the first pair of corners, but not reaching the next cell over
       #    \
@@ -149,7 +149,7 @@ square_covered_portion <- function(r, x, y){
       #   X-/---O
       #    /
 
-      half_circle_integral(r, -0.5, 0.5)-(x-0.5)
+      .half_circle_integral(r, -0.5, 0.5)-(x-0.5)
     }else if(r^2 < (((x+0.5)^2)+(0.5^2))){
       # Reaching in to the next cell over, but not covering this cell completely
       #       \
@@ -160,7 +160,7 @@ square_covered_portion <- function(r, x, y){
       #   X----/O
       #       /
       crossover <- sqrt(r^2-(x+0.5)^2)
-      2*(half_circle_integral(r, crossover, 0.5)-(0.5-crossover)*(x-0.5)+(crossover))
+      2*(.half_circle_integral(r, crossover, 0.5)-(0.5-crossover)*(x-0.5)+(crossover))
     }else{
       # The cell is covered
       #          \
@@ -191,7 +191,7 @@ square_covered_portion <- function(r, x, y){
     #   X \  O
     #      \
     crossover <- sqrt(r^2-(x-0.5)^2)
-    half_circle_integral(r, y-0.5, crossover)-(crossover-(y-0.5))*(x-0.5)
+    .half_circle_integral(r, y-0.5, crossover)-(crossover-(y-0.5))*(x-0.5)
   }else if(r^2 <= (x+0.5)^2+(y-0.5)^2){
     # First 2 corners are covered
     #   \
@@ -200,7 +200,7 @@ square_covered_portion <- function(r, x, y){
     #      \
     #   x   \$
     #        \
-    half_circle_integral(r, y-0.5, y+0.5)-(x-0.5)
+    .half_circle_integral(r, y-0.5, y+0.5)-(x-0.5)
   }else if(r^2 <= (x+0.5)^2+(y+0.5)^2){
     # Three corners are covered
     #      \
@@ -210,7 +210,7 @@ square_covered_portion <- function(r, x, y){
     #   X    X \
     #           \
     crossover <- sqrt(r^2-(x+0.5)^2)
-    half_circle_integral(r, crossover, y+0.5)-((y+0.5)-crossover)*(x-0.5)+(crossover-(y-0.5))
+    .half_circle_integral(r, crossover, y+0.5)-((y+0.5)-crossover)*(x-0.5)+(crossover-(y-0.5))
   }else{
     #Completely covered
     #         \
@@ -223,18 +223,18 @@ square_covered_portion <- function(r, x, y){
   }
 }
 
-smooth_uniform_circle_qkernel <- function(r) {
+.smooth_uniform_circle_qkernel <- function(r) {
   qmx = matrix(1:(r+1.5), r+1.5, r+1.5)
   qmy = matrix(1:(r+1.5), r+1.5, r+1.5, byrow=TRUE)
-  matrix(mapply(square_covered_portion, r, qmx, qmy), r+1.5, r+1.5)
+  matrix(mapply(.square_covered_portion, r, qmx, qmy), r+1.5, r+1.5)
 }
 
 #' @export
 smooth_uniform_circle_kernel <- function(r){
-  qkernel_to_kernel(smooth_uniform_circle_qkernel(r))
+  .qkernel_to_kernel(.smooth_uniform_circle_qkernel(r))
 }
 
-distance_qkernel <- function(r){
+.distance_qkernel <- function(r){
   #r <- ceiling(r)
   x <- matrix(0:r, r+1, r+1)
   y <- matrix(0:r, r+1, r+1, byrow=TRUE)
@@ -243,10 +243,10 @@ distance_qkernel <- function(r){
 
 #' @export
 distance_kernel <- function(r){
-  qkernel_to_kernel(distance_qkernel(r))
+  .qkernel_to_kernel(.distance_qkernel(r))
 }
 
-exponential_qkernel<-function(dbar,cellDim=1,negligible=10^-10,returnScale=F,dmax=NULL){
+.exponential_qkernel<-function(dbar,cellDim=1,negligible=10^-10,returnScale=F,dmax=NULL){
   #Exponential kernel from Hughes et al 2015 American Naturalist
   dbarCell <- dbar/cellDim
   if(is.null(dmax)){
@@ -255,7 +255,7 @@ exponential_qkernel<-function(dbar,cellDim=1,negligible=10^-10,returnScale=F,dma
       stop("Set negligible so that pi*dbar^2*negligible/2 <=1")
     }
   }
-  m <- (2/(pi*dbarCell^2))*exp(-2*distance_qkernel(dmax)/dbarCell)
+  m <- (2/(pi*dbarCell^2))*exp(-2*.distance_qkernel(dmax)/dbarCell)
   m[m<negligible] <- 0
   if(returnScale){
     return((sum(m[-1,])*4)+m[1,1])#this would be sum(m) if we had the entire matrix, but we do not
@@ -266,17 +266,17 @@ exponential_qkernel<-function(dbar,cellDim=1,negligible=10^-10,returnScale=F,dma
 
 #' @export
 exponential_kernel <- function(dbar,cellDim=1,negligible=10^-10,returnScale=F,dmax=NULL){
-  qkernel_to_kernel(exponential_qkernel(dbar, cellDim, negligible, returnScale, dmax))
+  .qkernel_to_kernel(.exponential_qkernel(dbar, cellDim, negligible, returnScale, dmax))
 }
 
-gaussian_qkernel <- function(sd, r0=0.05){
+.gaussian_qkernel <- function(sd, r0=0.05){
   k <- matrix(exp(-(0:sqrt(-2*sd*sd*log(r0)))/(2*sd*sd)))
   list(k, t(k))
 }
 
 #' @export
 gaussian_kernel <- function(sd, r0=0.05){
-  qkernel_to_kernel(gaussian_qkernel(sd, r0))
+  .qkernel_to_kernel(.gaussian_qkernel(sd, r0))
 }
 
 
