@@ -56,7 +56,7 @@ beyer_alg <- function(alg, data, kernel, beta = 0.2, z = 0.5, threshold=NULL){
 #
 #' @export
 beyer_stretch <- function(data, kernel, beta = 0.2, z = 0.5, threshold=NULL){
-  return(beyer_alg(.beyer_stretch, data, kernel, beta, z, threshold))
+  return(beyer_alg(Rconnect:::.beyer_stretch, data, kernel, beta, z, threshold))
 }
 
 #
@@ -74,7 +74,7 @@ beyer_stretch <- function(data, kernel, beta = 0.2, z = 0.5, threshold=NULL){
 #
 #' @export
 beyer_wrap <- function(data, kernel, beta = 0.2, z = 0.5, threshold=NULL){
-  return(beyer_alg(.beyer_wrap, data, kernel, beta, z, threshold))
+  return(beyer_alg(Rconnect:::.beyer_wrap, data, kernel, beta, z, threshold))
 }
 #
 # h f|f g h i j|j i
@@ -91,7 +91,7 @@ beyer_wrap <- function(data, kernel, beta = 0.2, z = 0.5, threshold=NULL){
 #
 #' @export
 beyer_reflect <- function(data, kernel, beta = 0.2, z = 0.5, threshold=NULL){
-  return(beyer_alg(.beyer_refect, data, kernel, beta, z, threshold))
+  return(beyer_alg(Rconnect:::.beyer_refect, data, kernel, beta, z, threshold))
 }
 #
 # 0 0|0 0 0 0 0|0 0
@@ -108,11 +108,11 @@ beyer_reflect <- function(data, kernel, beta = 0.2, z = 0.5, threshold=NULL){
 #
 #' @export
 beyer_zero <- function(data, kernel, beta = 0.2, z = 0.5, threshold=NULL){
-  return(beyer_alg(.beyer_zero, data, kernel, beta, z, threshold))
+  return(beyer_alg(Rconnect:::.beyer_zero, data, kernel, beta, z, threshold))
 }
 
 # the output is shrunk down by enough that it never reaches outside the data matrix in the first place
 #' @export
 beyer_shrink <- function(data, kernel, beta = 0.2, z = 0.5, threshold=NULL){
-  return(beyer_alg(.beyer_shrink, data, kernel, beta, z, threshold))
+  return(beyer_alg(Rconnect:::.beyer_shrink, data, kernel, beta, z, threshold))
 }

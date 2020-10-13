@@ -12,10 +12,20 @@ using namespace std;
 
 template < int (CLAMP)(int, int, int, int), bool NARROW=false, bool ZERO_OUT_OF_BOUNDS=false>
 NumericMatrix _beyer(
-    const NumericMatrix& data,
+    NumericMatrix data,
     const NumericMatrix& mask,
     const double beta = 0.2,
     const double z = 0.5){
+  
+  const auto full_data_indexes = ranges::iota_view<int, int>(0, data.size());
+  
+  for_each(
+    execution::par_unseq,
+    begin(full_data_indexes),
+    end(full_data_indexes),
+    [&data, z](auto i){
+      data[i] = std::pow(data[i], z);
+    });
   
   auto m_width  = mask.ncol();
   auto m_height = mask.nrow();
@@ -41,7 +51,7 @@ NumericMatrix _beyer(
   const auto x_indexes = ranges::iota_view<int, int>(0, o_width);
   const auto y_indexes = ranges::iota_view<int, int>(0, o_height);
   
-  vector<tuple<int, int, double, double>> m_points;
+  vector<tuple<int, int, double>> m_points;
   //m_points.reserve(m_width*m_height);
   double max_e = 0;
   
@@ -53,8 +63,7 @@ NumericMatrix _beyer(
         m_points.emplace_back(
           x,
           y,
-          mask[y+x*m_height],
-          delta_m_e);
+          std::pow(mask[y+x*m_height], z)*delta_m_e);
         max_e+= delta_m_e;
       }
     }
@@ -93,7 +102,7 @@ NumericMatrix _beyer(
             0.0,
             plus<>{},
             [&](auto point){
-              auto[m_x, m_y, m_v, m_e]= point;
+              auto[m_x, m_y, m_v]= point;
               auto d_x = CLAMP(o_x, m_x, d_width,  m_width);
               auto d_y = CLAMP(o_y, m_y, d_height, m_height);
               if constexpr(ZERO_OUT_OF_BOUNDS){
@@ -101,7 +110,7 @@ NumericMatrix _beyer(
                   return 0.0;
                 }
               }
-              return std::pow(data[d_y+d_height*d_x]*m_v* d0, z)*m_e;
+              return data[d_y+d_height*d_x]*d0*m_v;
             })/max_e;
         });
     });
