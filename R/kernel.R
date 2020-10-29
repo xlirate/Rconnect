@@ -280,3 +280,32 @@ gaussian_kernel <- function(sd, r0=0.05){
 }
 
 
+
+
+.beyer_qkernel <- function(beta=0.2, r0=0.05){
+  #assert that 0 < beta 
+  #assert that 0 < r0 < 1
+  
+  #total area under the exponential distribution is (2*pi)/(beta^2)
+  #
+  #a = (2*pi)*(exp(-beta*r)*(-beta*r-1)+1)/(beta*beta)
+  # we leave off the 2*pi to avoid that opperation and rounding error
+  
+  r = 0
+  total = 1/(beta^2)
+  a = 0
+  while(a < total*(1-r0)){
+    r = r+1
+    a <- (exp(-beta*r)*(-beta*r-1)+1)/(beta*beta)
+    #print(c(r, a, total, a/total))
+  }
+  
+  return(exp(-beta*.distance_qkernel(r))*.hard_uniform_circle_qkernel(r))
+}
+
+beyer_kernel <- function(beta=0.2, r0=0.05){
+  .qkernel_to_kernel(.beyer_qkernel(beta, r0))/((2*pi)/(beta^2))
+}
+
+
+
