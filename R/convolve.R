@@ -114,6 +114,24 @@ convolve_zero <- function(data, kernel, reps = 1L, normalize = TRUE){
   return(.convolve_alg(Rconnect:::.convolve_zero, data, kernel, reps, normalize))
 }
 
+#
+# NaN NaN|NaN NaN NaN NaN NaN|NaN NaN
+# NaN NaN|NaN NaN NaN NaN NaN|NaN NaN
+# -------+-------------------+-------
+# NaN NaN| A   B   C   D   E |NaN NaN
+# NaN NaN| F   G   H   I   J |NaN NaN
+# NaN NaN| K   L   M   N   O |NaN NaN
+# NaN NaN| P   Q   R   S   T |NaN NaN
+# NaN NaN| U   V   W   X   Y |NaN NaN
+# -------+-------------------+-------
+# NaN NaN|NaN NaN NaN NaN NaN|NaN NaN
+# NaN NaN|NaN NaN NaN NaN NaN|NaN NaN
+#
+#' @export
+convolve_nan <- function(data, kernel, reps = 1L, normalize = TRUE){
+  return(.convolve_alg(Rconnect:::.convolve_nan, data, kernel, reps, normalize))
+}
+
 # the output is shrunk down by enough that it never reaches outside the data matrix in the first place
 #' @export
 convolve_shrink <- function(data, kernel, reps = 1L, normalize = TRUE){

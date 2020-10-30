@@ -2,6 +2,8 @@
 #include <execution>
 #include <ranges>
 #include <iostream>
+#include <ratio>
+#include <limits>
 
 #include "matrix_edge_cases.h"
 
@@ -10,7 +12,7 @@ using namespace std;
 
 // [[Rcpp::plugins(cpp2a)]]
 
-template < int (CLAMP)(int, int, int, int), bool NARROW=false, bool ZERO_OUT_OF_BOUNDS=false>
+template < int (CLAMP)(int, int, int, int), bool NARROW=false, bool DEFAULT_OUT_OF_BOUNDS=false, intmax_t DEFAULT_NUM=0, intmax_t DEFAULT_DEN=1>
 NumericMatrix _convolve(
     const NumericMatrix& data,
     const NumericMatrix& kernel){
@@ -83,9 +85,17 @@ NumericMatrix _convolve(
               auto[k_x, k_y, k_v]= point;
               auto d_x = CLAMP(o_x, k_x, d_width,  k_width);
               auto d_y = CLAMP(o_y, k_y, d_height, k_height);
-              if constexpr(ZERO_OUT_OF_BOUNDS){
+              if constexpr(DEFAULT_OUT_OF_BOUNDS){
                 if(d_x < 0 || d_width <= d_x || d_y < 0 || d_height <= d_y){
-                  return 0.0;
+                  if constexpr(DEFAULT_DEN){
+                    return double(DEFAULT_NUM)/DEFAULT_DEN;
+                  }else if constexpr(DEFAULT_NUM > 0){
+                    return std::numeric_limits<double>::infinity();
+                  }else if constexpr(DEFAULT_NUM < 0){
+                    return -std::numeric_limits<double>::infinity();
+                  }else{
+                    return std::numeric_limits<double>::quiet_NaN();
+                  }
                 }
               }
               return data[d_y+d_height*d_x]*k_v;
@@ -123,6 +133,10 @@ NumericMatrix convolve_zero(NumericMatrix data, const std::vector<NumericMatrix>
   return accumulate(begin(kernel), end(kernel), data, _convolve<&_zero, false, true>);
 }
 
+// [[Rcpp::export(.convolve_nan)]]
+NumericMatrix convolve_nan(NumericMatrix data, const std::vector<NumericMatrix>& kernel) {
+  return accumulate(begin(kernel), end(kernel), data, _convolve<&_zero, false, true, 0, 0>);
+}
 
 // [[Rcpp::export(.convolve_shrink)]]
 NumericMatrix convolve_shrink(NumericMatrix data, const std::vector<NumericMatrix>& kernel) {
