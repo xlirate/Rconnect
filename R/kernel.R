@@ -11,6 +11,26 @@ normalize_kernel <- function(k){
   }
 }
 
+#' @export
+flatten_kernel <- function(kernel){
+  if(is.list(kernel)){
+    kernel <- Reduce(function(k1, k2){
+      k <- matrix(0, nrow=(nrow(k1)+nrow(k2)-1), ncol=(nrow(k1)+nrow(k2)-1))
+      for(x1 in 1:ncol(k1)){
+        for(y1 in 1:nrow(k1)){
+          for(x2 in 1:ncol(k2)){
+            for(y2 in 1:nrow(k2)){
+              k[y1+y2-1, x1+x2-1] = k[y1+y2-1, x1+x2-1]+(k1[y1,x1]*k2[y2,x2])
+            }
+          }
+        }
+      }
+      return(k)
+    }, kernel)
+  }
+  return(kernel)
+}
+
 .qkernel_to_kernel <- function(q){
   if(typeof(q) == "list"){
     lapply(q, .qkernel_to_kernel)

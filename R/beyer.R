@@ -6,38 +6,8 @@
   return(data)
 }
 
-.beyer_fix_kernel <- function(kernel, threshold=NULL){
-  if(is.list(kernel)){
-    kernel <- Reduce(function(k1, k2){
-      k <- matrix(0, nrow=(nrow(k1)+nrow(k2)-1), ncol=(nrow(k1)+nrow(k2)-1))
-      for(x1 in 1:ncol(k1)){
-        for(y1 in 1:nrow(k1)){
-          for(x2 in 1:ncol(k2)){
-            for(y2 in 1:nrow(k2)){
-              k[y1+y2-1, x1+x2-1] = k[y1+y2-1, x1+x2-1]+(k1[y1,x1]*k2[y2,x2])
-            }
-          }
-        }
-      }
-      return(k)
-    }, kernel)
-  }
-  if(!(ncol(kernel)%%2 && nrow(kernel)%%2)){
-    errorCondition("Kernels must be an n by m martix where both n and m are odd")
-  }
-  if(!is.null(threshold)){
-    for(x in 1:ncol(kernel)){
-      for(y in 1:nrow(kernel)){
-        kernel[y,x] = +(threshold<=kernel[y,x])
-      }
-    }
-  }
-  return(kernel)
-}
-
-
 .beyer_alg <- function(alg, data, z = 0.5, beta = 0.2, r0=0.05){
-  return(alg(.beyer_fix_data(data), normalize_kernel(beyer_kernel(beta, r0)), z))
+  return(alg(.beyer_fix_data(data)^z, flatten_kernel(normalize_kernel(beyer_kernel(beta, r0)))))
 }
 
 
@@ -56,7 +26,7 @@
 #
 #' @export
 beyer_stretch <- function(data, kernel, beta = 0.2, z = 0.5, threshold=NULL){
-  return(.beyer_alg(.powered_convolve_stretch, data, z, beta, r0))
+  return(.beyer_alg(convolve_stretch, data, z, beta, r0))
 }
 
 #
@@ -74,7 +44,7 @@ beyer_stretch <- function(data, kernel, beta = 0.2, z = 0.5, threshold=NULL){
 #
 #' @export
 beyer_wrap <- function(data, beta = 0.2, z = 0.5, r0=0.05){
-  return(.beyer_alg(.powered_convolve_wrap, data, z, beta, r0))
+  return(.beyer_alg(convolve_wrap, data, z, beta, r0))
 }
 #
 # h f|f g h i j|j i
@@ -91,7 +61,7 @@ beyer_wrap <- function(data, beta = 0.2, z = 0.5, r0=0.05){
 #
 #' @export
 beyer_reflect <- function(data, beta = 0.2, z = 0.5, r0=0.05){
-  return(.beyer_alg(.powered_convolve_refect, data, z, beta, r0))
+  return(.beyer_alg(convolve_refect, data, z, beta, r0))
 }
 #
 # 0 0|0 0 0 0 0|0 0
@@ -108,7 +78,7 @@ beyer_reflect <- function(data, beta = 0.2, z = 0.5, r0=0.05){
 #
 #' @export
 beyer_zero <- function(data, beta = 0.2, z = 0.5, r0=0.05){
-  return(.beyer_alg(.powered_convolve_zero, data, z, beta, r0))
+  return(.beyer_alg(convolve_zero, data, z, beta, r0))
 }
 
 #
@@ -126,11 +96,11 @@ beyer_zero <- function(data, beta = 0.2, z = 0.5, r0=0.05){
 #
 #' @export
 convolve_nan <- function(data, beta = 0.2, z = 0.5, r0=0.05){
-  return(.convolve_alg(.powered_convolve_nan, data, z, beta, r0))
+  return(.convolve_alg(convolve_nan, data, z, beta, r0))
 }
 
 # the output is shrunk down by enough that it never reaches outside the data matrix in the first place
 #' @export
 beyer_shrink <- function(data, beta = 0.2, z = 0.5, r0=0.05){
-  return(.beyer_alg(.powered_convolve_shrink, data, z, beta, r0))
+  return(.beyer_alg(convolve_shrink, data, z, beta, r0))
 }
