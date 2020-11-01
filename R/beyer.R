@@ -36,8 +36,8 @@
 }
 
 
-.beyer_alg <- function(alg, data, kernel, beta = 0.2, z = 0.5, threshold=NULL){
-  return(alg(.beyer_fix_data(data), .beyer_fix_kernel(kernel, threshold), beta, z))
+.beyer_alg <- function(alg, data, z = 0.5, beta = 0.2, r0=0.05){
+  return(alg(.beyer_fix_data(data), normalize_kernel(beyer_kernel(beta, r0)), z))
 }
 
 
@@ -56,7 +56,7 @@
 #
 #' @export
 beyer_stretch <- function(data, kernel, beta = 0.2, z = 0.5, threshold=NULL){
-  return(.beyer_alg(.beyer_stretch, data, kernel, beta, z, threshold))
+  return(.beyer_alg(.powered_convolve_stretch, data, z, beta, r0))
 }
 
 #
@@ -73,8 +73,8 @@ beyer_stretch <- function(data, kernel, beta = 0.2, z = 0.5, threshold=NULL){
 # i j|f g h i j|f g
 #
 #' @export
-beyer_wrap <- function(data, kernel, beta = 0.2, z = 0.5, threshold=NULL){
-  return(.beyer_alg(.beyer_wrap, data, kernel, beta, z, threshold))
+beyer_wrap <- function(data, beta = 0.2, z = 0.5, r0=0.05){
+  return(.beyer_alg(.powered_convolve_wrap, data, z, beta, r0))
 }
 #
 # h f|f g h i j|j i
@@ -90,8 +90,8 @@ beyer_wrap <- function(data, kernel, beta = 0.2, z = 0.5, threshold=NULL){
 # q u|p q r s t|t s
 #
 #' @export
-beyer_reflect <- function(data, kernel, beta = 0.2, z = 0.5, threshold=NULL){
-  return(.beyer_alg(.beyer_refect, data, kernel, beta, z, threshold))
+beyer_reflect <- function(data, beta = 0.2, z = 0.5, r0=0.05){
+  return(.beyer_alg(.powered_convolve_refect, data, z, beta, r0))
 }
 #
 # 0 0|0 0 0 0 0|0 0
@@ -107,12 +107,30 @@ beyer_reflect <- function(data, kernel, beta = 0.2, z = 0.5, threshold=NULL){
 # 0 0|0 0 0 0 0|0 0
 #
 #' @export
-beyer_zero <- function(data, kernel, beta = 0.2, z = 0.5, threshold=NULL){
-  return(.beyer_alg(.beyer_zero, data, kernel, beta, z, threshold))
+beyer_zero <- function(data, beta = 0.2, z = 0.5, r0=0.05){
+  return(.beyer_alg(.powered_convolve_zero, data, z, beta, r0))
+}
+
+#
+# NaN NaN|NaN NaN NaN NaN NaN|NaN NaN
+# NaN NaN|NaN NaN NaN NaN NaN|NaN NaN
+# -------+-------------------+-------
+# NaN NaN| A   B   C   D   E |NaN NaN
+# NaN NaN| F   G   H   I   J |NaN NaN
+# NaN NaN| K   L   M   N   O |NaN NaN
+# NaN NaN| P   Q   R   S   T |NaN NaN
+# NaN NaN| U   V   W   X   Y |NaN NaN
+# -------+-------------------+-------
+# NaN NaN|NaN NaN NaN NaN NaN|NaN NaN
+# NaN NaN|NaN NaN NaN NaN NaN|NaN NaN
+#
+#' @export
+convolve_nan <- function(data, beta = 0.2, z = 0.5, r0=0.05){
+  return(.convolve_alg(.powered_convolve_nan, data, z, beta, r0))
 }
 
 # the output is shrunk down by enough that it never reaches outside the data matrix in the first place
 #' @export
-beyer_shrink <- function(data, kernel, beta = 0.2, z = 0.5, threshold=NULL){
-  return(.beyer_alg(.beyer_shrink, data, kernel, beta, z, threshold))
+beyer_shrink <- function(data, beta = 0.2, z = 0.5, r0=0.05){
+  return(.beyer_alg(.powered_convolve_shrink, data, z, beta, r0))
 }

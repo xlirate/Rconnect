@@ -3,7 +3,7 @@ inline constexpr int _shrink(const int o_x, const int k_x, const int, const int)
   return o_x + k_x;
 }
 
-inline constexpr int _zero(const int o_x, const int k_x, const int d_width, const int k_width){
+inline constexpr int _default(const int o_x, const int k_x, const int d_width, const int k_width){
   return o_x + k_x - k_width /2;
 }
 

@@ -28,6 +28,13 @@ NumericMatrix _convolve(
   
   if constexpr(NARROW){
     if(d_height-(k_height-1) < 1 || d_width-(k_height-1) < 1){
+      /* 
+       * The mask is large enough that there is no output, so we just return an empty matrix 
+       * 
+       * This could be made into an error condition instead, or filtered out up in R before getting here, 
+       * but it is a cheap check and missing it might lead to a segfault
+       *
+       */
       NumericMatrix output(0, 0);
       return output;
     }else{
@@ -87,7 +94,7 @@ NumericMatrix _convolve(
               auto d_y = CLAMP(o_y, k_y, d_height, k_height);
               if constexpr(DEFAULT_OUT_OF_BOUNDS){
                 if(d_x < 0 || d_width <= d_x || d_y < 0 || d_height <= d_y){
-                  if constexpr(DEFAULT_DEN){
+                  if constexpr(DEFAULT_DEN != 0){
                     return double(DEFAULT_NUM)/DEFAULT_DEN;
                   }else if constexpr(DEFAULT_NUM > 0){
                     return std::numeric_limits<double>::infinity();
@@ -107,43 +114,88 @@ NumericMatrix _convolve(
 }
 
 
-
-
 // [[Rcpp::export(.convolve_stretch)]]
-NumericMatrix convolve_stretch(NumericMatrix data, std::vector<NumericMatrix> kernel) {
-  return accumulate(begin(kernel), end(kernel), data, _convolve<&_stretch>);
+NumericMatrix convolve_stretch(const NumericMatrix& data, const NumericMatrix& kernel) {
+  return _convolve<&_stretch>(data, kernel);
 }
-
-
 
 // [[Rcpp::export(.convolve_wrap)]]
-NumericMatrix convolve_wrap(NumericMatrix data, const std::vector<NumericMatrix>& kernel) {
-  return accumulate(begin(kernel), end(kernel), data, _convolve<&_wrap>);
+NumericMatrix convolve_wrap(const NumericMatrix& data, const NumericMatrix& kernel) {
+  return _convolve<&_wrap>(data, kernel);
 }
 
-
-// [[Rcpp::export(.convolve_refect)]]
-NumericMatrix convolve_refect(NumericMatrix data, const std::vector<NumericMatrix>& kernel) {
-  return accumulate(begin(kernel), end(kernel), data, _convolve<&_reflect>);
+// [[Rcpp::export(.convolve_reflect)]]
+NumericMatrix convolve_reflect(const NumericMatrix& data, const NumericMatrix& kernel) {
+  return _convolve<&_reflect>(data, kernel);
 }
-
 
 // [[Rcpp::export(.convolve_zero)]]
-NumericMatrix convolve_zero(NumericMatrix data, const std::vector<NumericMatrix>& kernel) {
-  return accumulate(begin(kernel), end(kernel), data, _convolve<&_zero, false, true>);
+NumericMatrix convolve_zero(const NumericMatrix& data, const NumericMatrix& kernel) {
+  return _convolve<&_default, false, true, 0, 1>(data, kernel);
 }
 
 // [[Rcpp::export(.convolve_nan)]]
-NumericMatrix convolve_nan(NumericMatrix data, const std::vector<NumericMatrix>& kernel) {
-  return accumulate(begin(kernel), end(kernel), data, _convolve<&_zero, false, true, 0, 0>);
+NumericMatrix convolve_nan(const NumericMatrix& data, const NumericMatrix& kernel) {
+  return _convolve<&_default, false, true, 0, 0>(data, kernel);
 }
 
 // [[Rcpp::export(.convolve_shrink)]]
-NumericMatrix convolve_shrink(NumericMatrix data, const std::vector<NumericMatrix>& kernel) {
-  return accumulate(begin(kernel), end(kernel), data, _convolve<&_shrink, true>);
+NumericMatrix convolve_shrink(const NumericMatrix& data, const NumericMatrix& kernel) {
+  return _convolve<&_shrink, true>(data, kernel);
 }
 
 
+
+template <NumericMatrix (CONV)(const NumericMatrix&, const NumericMatrix&)>
+NumericMatrix _powered_convolve(
+    const NumericMatrix& data,
+    const NumericMatrix& kernel,
+    const double power=1.0){
+  if(power == 1.0){
+    return CONV(data, kernel);
+  }else{
+    NumericMatrix powered_data(data.nrow(), data.ncol());
+    transform(
+      execution::par_unseq,
+      begin(data),
+      end(data),
+      begin(powered_data),
+      [power](auto d){
+      return std::pow(d, power);
+    });
+    return CONV(powered_data, kernel);
+  }
+}
+
+// [[Rcpp::export(.powered_convolve_stretch)]]
+NumericMatrix powered_convolve_stretch(const NumericMatrix& data, const NumericMatrix& kernel, const double power=1.0) {
+  return _powered_convolve<&convolve_stretch>(data, kernel, power);
+}
+
+// [[Rcpp::export(.powered_convolve_wrap)]]
+NumericMatrix powered_convolve_wrap(const NumericMatrix& data, const NumericMatrix& kernel, const double power=1.0) {
+  return _powered_convolve<&convolve_wrap>(data, kernel, power);
+}
+
+// [[Rcpp::export(.powered_convolve_refect)]]
+NumericMatrix powered_convolve_refect(const NumericMatrix& data, const NumericMatrix& kernel, const double power=1.0) {
+  return _powered_convolve<&convolve_reflect>(data, kernel, power);
+}
+
+// [[Rcpp::export(.powered_convolve_zero)]]
+NumericMatrix powered_convolve_zero(const NumericMatrix& data, const NumericMatrix& kernel, const double power=1.0) {
+  return _powered_convolve<&convolve_zero>(data, kernel, power);
+}
+
+// [[Rcpp::export(.powered_convolve_nan)]]
+NumericMatrix powered_convolve_nan(const NumericMatrix& data, const NumericMatrix& kernel, const double power=1.0) {
+  return _powered_convolve<&convolve_nan>(data, kernel, power);
+}
+
+// [[Rcpp::export(.powered_convolve_shrink)]]
+NumericMatrix powered_convolve_shrink(const NumericMatrix& data, const NumericMatrix& kernel, const double power=1.0) {
+  return _powered_convolve<&convolve_shrink>(data, kernel, power);
+}
 
 
 

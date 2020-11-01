@@ -38,7 +38,9 @@
   reps <- .convolve_fix_reps(reps)
   while(reps > 0){
     reps <- reps-1
-    data <- alg(data, kernel)
+    for(k in kernel){
+      data <- alg(data, k)
+    }
   }
   return(data)
 }
@@ -59,7 +61,7 @@
 #
 #' @export
 convolve_stretch <- function(data, kernel, reps = 1L, normalize = TRUE){
-  return(.convolve_alg(Rconnect:::.convolve_stretch, data, kernel, reps, normalize))
+  return(.convolve_alg(.convolve_stretch, data, kernel, reps, normalize))
 }
 
 #
@@ -77,7 +79,7 @@ convolve_stretch <- function(data, kernel, reps = 1L, normalize = TRUE){
 #
 #' @export
 convolve_wrap <- function(data, kernel, reps = 1L, normalize = TRUE){
-  return(.convolve_alg(Rconnect:::.convolve_wrap, data, kernel, reps, normalize))
+  return(.convolve_alg(.convolve_wrap, data, kernel, reps, normalize))
 }
 #
 # h f|f g h i j|j i
@@ -94,7 +96,7 @@ convolve_wrap <- function(data, kernel, reps = 1L, normalize = TRUE){
 #
 #' @export
 convolve_reflect <- function(data, kernel, reps = 1L, normalize = TRUE){
-  return(.convolve_alg(Rconnect:::.convolve_refect, data, kernel, reps, normalize))
+  return(.convolve_alg(.convolve_refect, data, kernel, reps, normalize))
 }
 #
 # 0 0|0 0 0 0 0|0 0
@@ -111,7 +113,7 @@ convolve_reflect <- function(data, kernel, reps = 1L, normalize = TRUE){
 #
 #' @export
 convolve_zero <- function(data, kernel, reps = 1L, normalize = TRUE){
-  return(.convolve_alg(Rconnect:::.convolve_zero, data, kernel, reps, normalize))
+  return(.convolve_alg(.convolve_zero, data, kernel, reps, normalize))
 }
 
 #
@@ -129,11 +131,11 @@ convolve_zero <- function(data, kernel, reps = 1L, normalize = TRUE){
 #
 #' @export
 convolve_nan <- function(data, kernel, reps = 1L, normalize = TRUE){
-  return(.convolve_alg(Rconnect:::.convolve_nan, data, kernel, reps, normalize))
+  return(.convolve_alg(.convolve_nan, data, kernel, reps, normalize))
 }
 
 # the output is shrunk down by enough that it never reaches outside the data matrix in the first place
 #' @export
 convolve_shrink <- function(data, kernel, reps = 1L, normalize = TRUE){
-  return(.convolve_alg(Rconnect:::.convolve_shrink, data, kernel, reps, normalize))
+  return(.convolve_alg(.convolve_shrink, data, kernel, reps, normalize))
 }

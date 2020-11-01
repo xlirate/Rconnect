@@ -154,7 +154,7 @@ NumericMatrix beyer_zero(
     const NumericMatrix& mask, 
     const double beta = 0.2,
     const double z = 0.5) {
-  return _beyer<&_zero, false, true>(data, mask, beta, z);
+  return _beyer<&_default, false, true>(data, mask, beta, z);
 }
 
 
