@@ -14,19 +14,7 @@ normalize_kernel <- function(k){
 #' @export
 flatten_kernel <- function(kernel){
   if(is.list(kernel)){
-    kernel <- Reduce(function(k1, k2){
-      k <- matrix(0, nrow=(nrow(k1)+nrow(k2)-1), ncol=(nrow(k1)+nrow(k2)-1))
-      for(x1 in 1:ncol(k1)){
-        for(y1 in 1:nrow(k1)){
-          for(x2 in 1:ncol(k2)){
-            for(y2 in 1:nrow(k2)){
-              k[y1+y2-1, x1+x2-1] = k[y1+y2-1, x1+x2-1]+(k1[y1,x1]*k2[y2,x2])
-            }
-          }
-        }
-      }
-      return(k)
-    }, kernel)
+    kernel <- Reduce(function(k1, k2){return(k1 %*% k2)}, kernel)
   }
   return(kernel)
 }
@@ -297,6 +285,28 @@ exponential_kernel <- function(dbar,cellDim=1,negligible=10^-10,returnScale=F,dm
 #' @export
 gaussian_kernel <- function(sd, r0=0.05){
   .qkernel_to_kernel(.gaussian_qkernel(sd, r0))
+}
+
+.binomial_qkernal <- function(index){
+  if(!is.integer(index) && !(index == floor(index))){
+    stop("index must be an integer")
+  }else if(index < 0){
+    stop("index must be >= 0")
+  }else if(index%%2){
+    stop("index must be even. If it were odd, the kernal would not have a center")
+  }else if(index == 0){
+    return(matrix(1, 1))
+  }else{
+    
+    full_row <- (lapply(index, function(i) choose(i, 0:i))[[1]])
+    k <- matrix(full_row[-(index/2):0])
+    return(list(k, t(k)))
+  }
+}
+
+#' @export
+binomial_kernal <- function(index){
+  .qkernel_to_kernel(.binomial_qkernal(index))
 }
 
 .beyer_qkernel <- function(beta=0.2, r0=0.05){

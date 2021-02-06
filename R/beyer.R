@@ -57,7 +57,7 @@ beyer_wrap <- function(data, beta = 0.2, z = 0.5, r0=0.05){
 # v u|U V W X Y|y x
 # ---+---------+---
 # v u|u v w x y|y x
-# q u|p q r s t|t s
+# q p|p q r s t|t s
 #
 #' @export
 beyer_reflect <- function(data, beta = 0.2, z = 0.5, r0=0.05){
@@ -99,6 +99,15 @@ convolve_nan <- function(data, beta = 0.2, z = 0.5, r0=0.05){
   return(.convolve_alg(convolve_nan, data, z, beta, r0))
 }
 
+#
+# a b|c|d e
+# f g|h|i j
+# ---+-+---
+# k l|M|n o
+# ---+-+---
+# p q|r|s t
+# u v|w|x y
+# 
 # the output is shrunk down by enough that it never reaches outside the data matrix in the first place
 #' @export
 beyer_shrink <- function(data, beta = 0.2, z = 0.5, r0=0.05){
