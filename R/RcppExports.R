@@ -49,8 +49,8 @@
     .Call(`_Rconnect_powered_convolve_shrink`, data, kernel, power)
 }
 
-.cache_samc_4 <- function(permiability, death_rate) {
-    .Call(`_Rconnect_cache_samc_4`, permiability, death_rate)
+.cache_samc <- function(kernel, permiability, death_rate) {
+    .Call(`_Rconnect_cache_samc`, kernel, permiability, death_rate)
 }
 
 .samc_cache_sizes <- function(ca) {

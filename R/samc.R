@@ -1,9 +1,13 @@
-samc_cache <- function(permiability, lethality=NULL){
+
+
+
+samc_cache <- function(kernel, permiability, lethality=NULL){
+  #kernel should be n*m where n and m are odd
   if(is.null(lethality)){
     lethality <- matrix(0, nrow(permiability), ncol(permiability))
   }
   
-  return(.cache_samc_4(permiability, lethality))
+  return(.cache_samc(kernel, permiability, lethality))
 }
 
 

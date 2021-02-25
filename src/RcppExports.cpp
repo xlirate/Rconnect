@@ -156,15 +156,16 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// cache_samc_4
-Rcpp::XPtr<samc::cache> cache_samc_4(const Rcpp::NumericMatrix& permiability, const Rcpp::NumericMatrix& death_rate);
-RcppExport SEXP _Rconnect_cache_samc_4(SEXP permiabilitySEXP, SEXP death_rateSEXP) {
+// cache_samc
+Rcpp::XPtr<samc::cache> cache_samc(const Rcpp::NumericMatrix& kernel, const Rcpp::NumericMatrix& permiability, const Rcpp::NumericMatrix& death_rate);
+RcppExport SEXP _Rconnect_cache_samc(SEXP kernelSEXP, SEXP permiabilitySEXP, SEXP death_rateSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const Rcpp::NumericMatrix& >::type kernel(kernelSEXP);
     Rcpp::traits::input_parameter< const Rcpp::NumericMatrix& >::type permiability(permiabilitySEXP);
     Rcpp::traits::input_parameter< const Rcpp::NumericMatrix& >::type death_rate(death_rateSEXP);
-    rcpp_result_gen = Rcpp::wrap(cache_samc_4(permiability, death_rate));
+    rcpp_result_gen = Rcpp::wrap(cache_samc(kernel, permiability, death_rate));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -216,7 +217,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_Rconnect_powered_convolve_zero", (DL_FUNC) &_Rconnect_powered_convolve_zero, 3},
     {"_Rconnect_powered_convolve_nan", (DL_FUNC) &_Rconnect_powered_convolve_nan, 3},
     {"_Rconnect_powered_convolve_shrink", (DL_FUNC) &_Rconnect_powered_convolve_shrink, 3},
-    {"_Rconnect_cache_samc_4", (DL_FUNC) &_Rconnect_cache_samc_4, 2},
+    {"_Rconnect_cache_samc", (DL_FUNC) &_Rconnect_cache_samc, 3},
     {"_Rconnect_samc_cache_sizes", (DL_FUNC) &_Rconnect_samc_cache_sizes, 1},
     {"_Rconnect_samc_print_cache", (DL_FUNC) &_Rconnect_samc_print_cache, 1},
     {"_Rconnect_samc_one_step", (DL_FUNC) &_Rconnect_samc_one_step, 3},
