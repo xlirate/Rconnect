@@ -157,7 +157,7 @@ BEGIN_RCPP
 END_RCPP
 }
 // cache_samc_4
-Rcpp::XPtr<samc::cache<5>> cache_samc_4(const Rcpp::NumericMatrix& permiability, const Rcpp::NumericMatrix& death_rate);
+Rcpp::XPtr<samc::cache> cache_samc_4(const Rcpp::NumericMatrix& permiability, const Rcpp::NumericMatrix& death_rate);
 RcppExport SEXP _Rconnect_cache_samc_4(SEXP permiabilitySEXP, SEXP death_rateSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
@@ -168,82 +168,34 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// cache_samc_8
-Rcpp::XPtr<samc::cache<9>> cache_samc_8(const Rcpp::NumericMatrix& permiability, const Rcpp::NumericMatrix& death_rate);
-RcppExport SEXP _Rconnect_cache_samc_8(SEXP permiabilitySEXP, SEXP death_rateSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const Rcpp::NumericMatrix& >::type permiability(permiabilitySEXP);
-    Rcpp::traits::input_parameter< const Rcpp::NumericMatrix& >::type death_rate(death_rateSEXP);
-    rcpp_result_gen = Rcpp::wrap(cache_samc_8(permiability, death_rate));
-    return rcpp_result_gen;
-END_RCPP
-}
-// cache_samc_binomial_2
-Rcpp::XPtr<samc::cache<9>> cache_samc_binomial_2(const Rcpp::NumericMatrix& permiability, const Rcpp::NumericMatrix& death_rate);
-RcppExport SEXP _Rconnect_cache_samc_binomial_2(SEXP permiabilitySEXP, SEXP death_rateSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const Rcpp::NumericMatrix& >::type permiability(permiabilitySEXP);
-    Rcpp::traits::input_parameter< const Rcpp::NumericMatrix& >::type death_rate(death_rateSEXP);
-    rcpp_result_gen = Rcpp::wrap(cache_samc_binomial_2(permiability, death_rate));
-    return rcpp_result_gen;
-END_RCPP
-}
-// cache_samc_binomial_4
-Rcpp::XPtr<samc::cache<25>> cache_samc_binomial_4(const Rcpp::NumericMatrix& permiability, const Rcpp::NumericMatrix& death_rate);
-RcppExport SEXP _Rconnect_cache_samc_binomial_4(SEXP permiabilitySEXP, SEXP death_rateSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const Rcpp::NumericMatrix& >::type permiability(permiabilitySEXP);
-    Rcpp::traits::input_parameter< const Rcpp::NumericMatrix& >::type death_rate(death_rateSEXP);
-    rcpp_result_gen = Rcpp::wrap(cache_samc_binomial_4(permiability, death_rate));
-    return rcpp_result_gen;
-END_RCPP
-}
-// cache_samc_binomial_6
-Rcpp::XPtr<samc::cache<49>> cache_samc_binomial_6(const Rcpp::NumericMatrix& permiability, const Rcpp::NumericMatrix& death_rate);
-RcppExport SEXP _Rconnect_cache_samc_binomial_6(SEXP permiabilitySEXP, SEXP death_rateSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const Rcpp::NumericMatrix& >::type permiability(permiabilitySEXP);
-    Rcpp::traits::input_parameter< const Rcpp::NumericMatrix& >::type death_rate(death_rateSEXP);
-    rcpp_result_gen = Rcpp::wrap(cache_samc_binomial_6(permiability, death_rate));
-    return rcpp_result_gen;
-END_RCPP
-}
 // samc_cache_sizes
-std::vector<size_t> samc_cache_sizes(const Rcpp::XPtr<samc::cache<5>>& ca);
+std::vector<size_t> samc_cache_sizes(const Rcpp::XPtr<samc::cache>& ca);
 RcppExport SEXP _Rconnect_samc_cache_sizes(SEXP caSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const Rcpp::XPtr<samc::cache<5>>& >::type ca(caSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::XPtr<samc::cache>& >::type ca(caSEXP);
     rcpp_result_gen = Rcpp::wrap(samc_cache_sizes(ca));
     return rcpp_result_gen;
 END_RCPP
 }
 // samc_print_cache
-void samc_print_cache(const Rcpp::XPtr<samc::cache<5>>& ca);
+void samc_print_cache(const Rcpp::XPtr<samc::cache>& ca);
 RcppExport SEXP _Rconnect_samc_print_cache(SEXP caSEXP) {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const Rcpp::XPtr<samc::cache<5>>& >::type ca(caSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::XPtr<samc::cache>& >::type ca(caSEXP);
     samc_print_cache(ca);
     return R_NilValue;
 END_RCPP
 }
 // samc_one_step
-Rcpp::NumericMatrix samc_one_step(const Rcpp::XPtr<samc::cache<5>>& ca, const Rcpp::NumericMatrix& pop_in, const Rcpp::NumericMatrix& dead_in);
+Rcpp::NumericMatrix samc_one_step(const Rcpp::XPtr<samc::cache>& ca, const Rcpp::NumericMatrix& pop_in, const Rcpp::NumericMatrix& dead_in);
 RcppExport SEXP _Rconnect_samc_one_step(SEXP caSEXP, SEXP pop_inSEXP, SEXP dead_inSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const Rcpp::XPtr<samc::cache<5>>& >::type ca(caSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::XPtr<samc::cache>& >::type ca(caSEXP);
     Rcpp::traits::input_parameter< const Rcpp::NumericMatrix& >::type pop_in(pop_inSEXP);
     Rcpp::traits::input_parameter< const Rcpp::NumericMatrix& >::type dead_in(dead_inSEXP);
     rcpp_result_gen = Rcpp::wrap(samc_one_step(ca, pop_in, dead_in));
@@ -265,10 +217,6 @@ static const R_CallMethodDef CallEntries[] = {
     {"_Rconnect_powered_convolve_nan", (DL_FUNC) &_Rconnect_powered_convolve_nan, 3},
     {"_Rconnect_powered_convolve_shrink", (DL_FUNC) &_Rconnect_powered_convolve_shrink, 3},
     {"_Rconnect_cache_samc_4", (DL_FUNC) &_Rconnect_cache_samc_4, 2},
-    {"_Rconnect_cache_samc_8", (DL_FUNC) &_Rconnect_cache_samc_8, 2},
-    {"_Rconnect_cache_samc_binomial_2", (DL_FUNC) &_Rconnect_cache_samc_binomial_2, 2},
-    {"_Rconnect_cache_samc_binomial_4", (DL_FUNC) &_Rconnect_cache_samc_binomial_4, 2},
-    {"_Rconnect_cache_samc_binomial_6", (DL_FUNC) &_Rconnect_cache_samc_binomial_6, 2},
     {"_Rconnect_samc_cache_sizes", (DL_FUNC) &_Rconnect_samc_cache_sizes, 1},
     {"_Rconnect_samc_print_cache", (DL_FUNC) &_Rconnect_samc_print_cache, 1},
     {"_Rconnect_samc_one_step", (DL_FUNC) &_Rconnect_samc_one_step, 3},

@@ -53,22 +53,6 @@
     .Call(`_Rconnect_cache_samc_4`, permiability, death_rate)
 }
 
-.cache_samc_8 <- function(permiability, death_rate) {
-    .Call(`_Rconnect_cache_samc_8`, permiability, death_rate)
-}
-
-.cache_samc_binomial_2 <- function(permiability, death_rate) {
-    .Call(`_Rconnect_cache_samc_binomial_2`, permiability, death_rate)
-}
-
-.cache_samc_binomial_4 <- function(permiability, death_rate) {
-    .Call(`_Rconnect_cache_samc_binomial_4`, permiability, death_rate)
-}
-
-.cache_samc_binomial_6 <- function(permiability, death_rate) {
-    .Call(`_Rconnect_cache_samc_binomial_6`, permiability, death_rate)
-}
-
 .samc_cache_sizes <- function(ca) {
     .Call(`_Rconnect_samc_cache_sizes`, ca)
 }
